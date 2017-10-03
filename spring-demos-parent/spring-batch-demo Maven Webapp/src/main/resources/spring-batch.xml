@@ -1,0 +1,132 @@
+<beans
+	xmlns="http://www.springframework.org/schema/beans"	
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch.xsd
+	http://www.springframework.org/schema/jdbc
+	http://www.springframework.org/schema/jdbc/spring-jdbc.xsd"
+	>
+	
+	
+	<batch:job id="messageJob" restartable="true">
+		<batch:step id="Step1">
+			<tasklet task-executor="taskExecutor" throttle-limit="50"  start-limit="3">
+				<chunk reader="messageReader" processor="messageProcessor"
+					writer="messageWriter" commit-interval="200" chunk-completion-policy="">
+				</chunk>
+			</tasklet>
+		</batch:step>
+	</batch:job>
+	
+	  <!-- run every 10 seconds -->
+  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<property name="triggers">
+	  <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="jobDetail" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	  </bean>
+	</property>
+  </bean>
+	
+	
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass" value="com.mark.demo.batch.job.JobQuartz" />
+		<property name="group" value="quartz-batch" />
+		<property name="jobDataAsMap">
+		  <map>
+			<entry key="jobName" value-ref="messageJob" />
+			<entry key="jobRepository" value-ref="jobRepository" />
+		  </map>
+		</property>
+   </bean>
+  
+	
+	
+	<bean id="taskExecutor"
+		class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+	</bean>
+
+	<bean id="placeholderProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:batch-${ENVIRONMENT:mysql}.properties</value>
+			</list>
+		</property>
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="order" value="1" />
+	</bean>
+	
+	 
+	<jdbc:initialize-database data-source="dataSource" enabled="${batch.data.source.init}" ignore-failures="DROPS">
+		<jdbc:script location="${batch.drop.script}"/>
+		<jdbc:script location="${batch.schema.script}"/>
+	</jdbc:initialize-database>
+	
+
+	
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://192.168.198.131:3306/springbatch" />
+		<property name="username" value="root" />
+		<property name="password" value="mark" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- processors -->
+
+	<bean id="messageProcessor"
+		class="com.mark.demo.batch.processor.MessageItemProcessor"></bean>
+	<!-- readers -->
+	<bean id="messageReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader">
+		<property name="dataSource" ref="dataSource" />
+		<property name="rowMapper" ref="messageMapper" />
+		<property name="queryProvider" ref="messageQueryProvider" />
+	</bean>
+	<bean id="messageMapper"
+		class="com.mark.demo.batch.batchMapper.MessageRowMapper" />
+
+	<bean id="messageQueryProvider"
+		class="org.springframework.batch.item.database.support.MySqlPagingQueryProvider">
+		<property name="selectClause" value="messageId,content,receiver,type,receiveTime" />
+		<property name="fromClause" value="message" />
+		<property name="sortKeys">
+        			<map>
+        				<entry key="messageId" value="ASCENDING"/>
+        			</map>
+        </property>
+	</bean>
+
+
+	<bean id="messageWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sql"
+			value="insert into processed_message(messageId,content,receiver,type,receiveTime) values(:messageId,:content,:receiver,:type,:receiveTime)" />
+		<property name="itemSqlParameterSourceProvider"
+			ref="itemSqlParameterSourceProvider" />
+	</bean>
+	
+
+	<bean id="itemSqlParameterSourceProvider"
+		class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
+</beans>
