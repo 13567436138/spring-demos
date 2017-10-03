@@ -2,6 +2,7 @@ package com.mark.demo.batch.batchMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import org.springframework.jdbc.core.RowMapper;
 
@@ -15,7 +16,13 @@ import com.mark.demo.batch.entity.Message;
 public class MessageRowMapper implements RowMapper<Message> {
 
 	public Message mapRow(ResultSet rs, int i) throws SQLException {
-		return null;
+		Message message=new Message();
+		message.setContent(rs.getString("content"));
+		message.setMessageId(rs.getLong("messageId"));
+		message.setReceiver(rs.getString("receiver"));
+		message.setReceiveTime(new Date(rs.getLong("receiverTime")));
+		message.setType(rs.getInt("type"));
+		return message;
 	}
 
 }

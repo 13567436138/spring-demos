@@ -13,7 +13,13 @@ import com.mark.demo.batch.entity.ProcessedMessage;
 public class MessageItemProcessor implements ItemProcessor<Message,ProcessedMessage> {
 
 	public ProcessedMessage process(Message message) throws Exception {
-		return null;
+		ProcessedMessage pm=new ProcessedMessage();
+		pm.setContent(message.getContent()+"processed");
+		pm.setMessageId(message.getMessageId());
+		pm.setReceiver(message.getReceiver());
+		pm.setReceiveTime(message.getReceiveTime());
+		pm.setType(2);
+		return pm;
 	}
 
 }
