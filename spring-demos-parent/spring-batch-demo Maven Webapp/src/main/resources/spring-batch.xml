@@ -1,16 +1,21 @@
 <beans
 	xmlns="http://www.springframework.org/schema/beans"	
+	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:batch="http://www.springframework.org/schema/batch"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 	http://www.springframework.org/schema/batch
 	http://www.springframework.org/schema/batch/spring-batch.xsd
 	http://www.springframework.org/schema/jdbc
-	http://www.springframework.org/schema/jdbc/spring-jdbc.xsd"
+	http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.2.xsd"
 	>
+	<context:property-placeholder order="1"  location="classpath:batch-default.properties" ignore-unresolvable="true"/> 
 	
 	
 	<batch:job id="messageJob" restartable="true">
@@ -136,4 +141,21 @@
 
 	<bean id="itemSqlParameterSourceProvider"
 		class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
+		
+		<!-- override -->
+	<bean id="jobExplorer"
+	    class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"
+	    >
+		<property name="dataSource" ref="dataSource" />
+		 <property name="tablePrefix" value="BATCH_" />  
+	</bean>
+	<!-- override -->
+	<bean id="jobService"
+	    class="org.springframework.batch.admin.service.SimpleJobServiceFactoryBean">
+	    <property name="jobRepository" ref="jobRepository" />
+	    <property name="jobLauncher" ref="jobLauncher" />
+	    <property name="jobLocator" ref="jobRegistry" />
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="tablePrefix" value="BATCH_" />
+	</bean>
 </beans>
