@@ -70,7 +70,14 @@
 	</jdbc:initialize-database>
 	
 
-	
+	<bean id="dataSourceData"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://192.168.198.131:3306/shiro" />
+		<property name="username" value="root" />
+		<property name="password" value="mark" />
+	</bean>
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -82,7 +89,7 @@
 
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSourceData" />
 	</bean>
 
 	<bean id="jobRepository"
@@ -98,7 +105,7 @@
 	<!-- readers -->
 	<bean id="messageReader"
 		class="org.springframework.batch.item.database.JdbcPagingItemReader">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSourceData" />
 		<property name="rowMapper" ref="messageMapper" />
 		<property name="queryProvider" ref="messageQueryProvider" />
 	</bean>
@@ -119,7 +126,7 @@
 
 	<bean id="messageWriter"
 		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSourceData" />
 		<property name="sql"
 			value="insert into processed_message(messageId,content,receiver,type,receiveTime) values(:messageId,:content,:receiver,:type,:receiveTime)" />
 		<property name="itemSqlParameterSourceProvider"
