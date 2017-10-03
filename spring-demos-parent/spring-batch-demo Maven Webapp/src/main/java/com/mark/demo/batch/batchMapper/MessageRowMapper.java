@@ -20,7 +20,7 @@ public class MessageRowMapper implements RowMapper<Message> {
 		message.setContent(rs.getString("content"));
 		message.setMessageId(rs.getLong("messageId"));
 		message.setReceiver(rs.getString("receiver"));
-		message.setReceiveTime(new Date(rs.getLong("receiverTime")));
+		message.setReceiveTime(new Date(rs.getLong("receiveTime")));
 		message.setType(rs.getInt("type"));
 		return message;
 	}
