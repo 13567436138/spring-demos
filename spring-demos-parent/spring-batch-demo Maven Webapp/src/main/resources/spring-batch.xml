@@ -28,7 +28,7 @@
 		</batch:step>
 	</batch:job>
 	
-	  <!-- run every 10 seconds -->
+	
   <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	<property name="triggers">
 	  <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
