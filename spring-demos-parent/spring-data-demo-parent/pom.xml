@@ -18,6 +18,7 @@
 
   <modules>
   	<module>spring-data-gemfire-demo Maven Webapp</module>
+  	<module>spring-data-cassandra Maven Webapp</module>
   </modules>
   <dependencyManagement>
   	<dependencies>
@@ -31,6 +32,12 @@
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
 		    <artifactId>spring-data-geode</artifactId>
+		    <version>2.0.0.RELEASE</version>
+		</dependency>
+  		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-cassandra -->
+		<dependency>
+		    <groupId>org.springframework.data</groupId>
+		    <artifactId>spring-data-cassandra</artifactId>
 		    <version>2.0.0.RELEASE</version>
 		</dependency>
   		
