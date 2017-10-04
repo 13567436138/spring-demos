@@ -16,5 +16,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <modules>
+  	<module>spring-data-gemfire-demo Maven Webapp</module>
+  </modules>
   
 </project>
