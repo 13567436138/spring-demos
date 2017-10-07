@@ -1,12 +1,11 @@
 package com.mark.demo.security.base;
 
-import java.io.Serializable;
-
+import org.apache.geode.DataSerializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
 
-public abstract class GenericEntity implements Serializable {
+public abstract class GenericEntity implements DataSerializable {
 
     private static final long serialVersionUID = -5070399515553795258L;
 

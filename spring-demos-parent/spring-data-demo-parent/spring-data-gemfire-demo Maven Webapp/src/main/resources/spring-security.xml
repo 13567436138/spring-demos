@@ -26,10 +26,10 @@
                     password-parameter="password" username-parameter="userName" />  
   		<csrf disabled="true"/>
         <!-- "记住我"功能，采用持久化策略(将用户的登录信息存放cookie -->               
-        <remember-me use-secure-cookie="true"
+        <!-- <remember-me use-secure-cookie="true"
         	data-source-ref="dataSource"
 			token-validity-seconds="1209600"
-			remember-me-parameter="remember-me" />  
+			remember-me-parameter="remember-me" />   -->
           
         <!-- 用户退出的跳转页面 -->    
         <!-- <logout invalidate-session="true" logout-url="/j_spring_security_logout" logout-success-url="/login.jsp"/> -->  

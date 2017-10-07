@@ -1,5 +1,11 @@
 package com.mark.demo.security.entity;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.apache.geode.DataSerializable;
+import org.apache.geode.Instantiator;
 import org.springframework.data.gemfire.mapping.annotation.Region;
 
 import com.mark.demo.security.base.GenericEntity;
@@ -18,6 +24,16 @@ public class Menu extends GenericEntity{
 	private String icon;
 	private int order;
 	
+	public Menu(){}
+	public Menu(int id,int pid, String menuName, String menuDesc, String link, String icon, int order) {
+		this.id=id;
+		this.pid = pid;
+		this.menuName = menuName;
+		this.menuDesc = menuDesc;
+		this.link = link;
+		this.icon = icon;
+		this.order = order;
+	}
 
 	public int getOrder() {
 		return order;
@@ -65,6 +81,33 @@ public class Menu extends GenericEntity{
 
 	public void setPid(int pid) {
 		this.pid = pid;
+	}
+	static {
+	    Instantiator.register(new Instantiator(Menu.class, 1029) {
+	        public DataSerializable newInstance() {
+	          return new User();
+	        }
+	      });
+	  }
+	@Override
+	public void fromData(DataInput input) throws IOException, ClassNotFoundException {
+		id=input.readInt();
+		pid=input.readInt();
+		menuName=input.readUTF();
+		menuDesc=input.readUTF();
+		icon=input.readUTF();
+		link=input.readUTF();
+		order=input.readInt();
+	}
+	@Override
+	public void toData(DataOutput output) throws IOException {
+		output.writeInt(id);
+		output.writeInt(pid);
+		output.writeUTF(menuName);
+		output.writeUTF(menuDesc);
+		output.writeUTF(icon);
+		output.writeUTF(link);
+		output.writeInt(order);
 	}
 
 	

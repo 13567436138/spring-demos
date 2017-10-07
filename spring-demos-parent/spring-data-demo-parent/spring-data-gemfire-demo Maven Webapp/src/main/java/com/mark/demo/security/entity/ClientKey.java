@@ -1,8 +1,6 @@
 package com.mark.demo.security.entity;
 
-import com.mark.demo.security.base.GenericEntity;
-
-public class ClientKey extends GenericEntity
+public class ClientKey 
 {
     private static final long serialVersionUID = 1L;
     
