@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans:beans xmlns="http://www.springframework.org/schema/security"  
+             xmlns:beans="http://www.springframework.org/schema/beans"  
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+             xsi:schemaLocation="http://www.springframework.org/schema/beans 
+             http://www.springframework.org/schema/beans/spring-beans-4.0.xsd          
+			http://www.springframework.org/schema/security 
+			http://www.springframework.org/schema/security/spring-security-4.2.xsd"> 
+	<beans:bean id="springUtils" class="com.mark.demo.security.utils.SpringUtils"></beans:bean>	
+			
+	<http pattern="/js/**" security="none" />  
+    <http pattern="/css/**" security="none" />  
+    <http pattern="/index.jsp*" security="none" /> 		
+	<http pattern="/common/login*" security="none" /> 
+	<http pattern="/captcha" security="none"></http> 	
+	<http auto-config="true" create-session="always"  pattern="/**"
+          use-expressions="true"  disable-url-rewriting="true" 
+          access-decision-manager-ref="customAccessDecisionManager" 
+          authentication-manager-ref="authenticationManager">  
+         <intercept-url access="ROLE_ADMIN" pattern="/admins/**"/>
+        <!-- 配置登录页面  -->   
+        <form-login login-page="/common/login" login-processing-url="/common/login/submitlogin"    
+                    authentication-success-handler-ref="authenticationSuccess"  
+                    authentication-success-forward-url="/admins/indexes/index" 
+                    authentication-failure-handler-ref="exceptionMappingAuthenticationFailureHandler"
+                    password-parameter="password" username-parameter="userName" />  
+  		<csrf disabled="true"/>
+        <!-- "记住我"功能，采用持久化策略(将用户的登录信息存放cookie -->               
+        <remember-me use-secure-cookie="true"
+        	data-source-ref="dataSource"
+			token-validity-seconds="1209600"
+			remember-me-parameter="remember-me" />  
+          
+        <!-- 用户退出的跳转页面 -->    
+        <!-- <logout invalidate-session="true" logout-url="/j_spring_security_logout" logout-success-url="/login.jsp"/> -->  
+        <logout invalidate-session="true" logout-url="/common/logout" success-handler-ref="logoutSuccessHandler" />  
+          
+        <!-- 会话管理，设置最多登录异常，error-if-maximum-exceeded = false为第二次登录就会使前一个登录失效 -->  
+        <session-management invalid-session-url="/common/login">  
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/common/login?expire=true"/>  
+        </session-management>  
+          
+        <!-- 添加自定义的过滤器 放在FILTER_SECURITY_INTERCEPTOR之前有效 -->             
+        <custom-filter ref="customFilterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR" /> 
+        <!-- <custom-filter before="FORM_LOGIN_FILTER" ref="usernamePasswordAuthenticationFilter" /> -->   
+        
+        <!-- <custom-filter ref="switchUserProcessingFilter" after="FILTER_SECURITY_INTERCEPTOR"/>    -->
+          
+        <anonymous enabled="false" />   
+    </http> 	
+			
+	<beans:bean id="usernamePasswordAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<beans:property name="filterProcessesUrl" value="/common/login/submitlogin"></beans:property>
+		<beans:property name="authenticationManager" ref="authenticationManager"></beans:property>
+		<beans:property name="usernameParameter" value="userName"></beans:property>
+		<beans:property name="passwordParameter" value="password"></beans:property>
+	</beans:bean>
+	
+	<!-- 登陆成功跳转 -->  
+    <beans:bean id="authenticationSuccess" class="com.mark.demo.security.security.CustomSavedRequestAwareAuthenticationSuccessHandler">  
+         <beans:property name="defaultTargetUrl" value="/admins/indexes/index"/>  
+    </beans:bean>  
+      
+    <!-- 注销成功 -->  
+    <beans:bean id="logoutSuccessHandler" class="com.mark.demo.security.security.CustomLogoutSuccessHandler">  
+         <beans:property name="defaultTargetUrl" value="/common/login"></beans:property>  
+    </beans:bean>  
+      
+    <beans:bean id="customAccessDecisionManager" class="com.mark.demo.security.security.CustomAccessDecisionManager"></beans:bean>
+    <beans:bean id="customUserDetailsService" class="com.mark.demo.security.security.CustomUserDetailsService"></beans:bean>
+    <!-- 用户登陆处理 -->  
+    <authentication-manager alias="authenticationManager"  erase-credentials="false">  
+        <authentication-provider user-service-ref="customUserDetailsService">                          
+        </authentication-provider>  
+    </authentication-manager>  
+     
+    
+      
+    <beans:bean id="exceptionMappingAuthenticationFailureHandler" class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">  
+        <beans:property name="exceptionMappings">  
+            <beans:props>  
+                <beans:prop key="org.springframework.security.authentication.DisabledException">/common/login?disabled=true</beans:prop>  
+                <beans:prop key="org.springframework.security.authentication.BadCredentialsException">/common/login?badCredentials=true</beans:prop>  
+                <beans:prop key="org.springframework.security.authentication.LockedException">/common/login?locked=true</beans:prop>             
+            </beans:props>  
+        </beans:property>  
+    </beans:bean>  
+ 
+      
+    <!-- <beans:bean id="switchUserProcessingFilter" class="org.springframework.security.web.authentication.switchuser.SwitchUserFilter">  
+            <beans:property name="userDetailsService" ref="customUserDetailsService" />  
+            <beans:property name="switchUserUrl" value="/j_spring_security_switch_user" />  
+            <beans:property name="exitUserUrl" value="/j_spring_security_exit_user" />  
+            <beans:property name="targetUrl" value="/index" />  
+    </beans:bean>    -->
+			
+</beans:beans>  

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.2.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+    <description>Spring-MVC配置</description>
+    <!-- 加载spring-mvc配置文件 -->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:spring-mvc.properties"/>
+
+    <!-- 启用aspectj 代理 -->
+    <aop:aspectj-autoproxy/>
+
+    <!-- 对静态资源文件的访问， 将无法mapping到Controller的path交给default servlet handler处理 -->
+    <mvc:default-servlet-handler/>
+    <!-- 静态资源映射 -->
+    <mvc:resources mapping="/styles/**" location="/styles/" cache-period="31536000"/>
+    <mvc:resources mapping="/images/**" location="/images/" cache-period="31536000"/>
+    <mvc:resources mapping="/js/**" location="/js/" />
+    <mvc:resources mapping="/css/**" location="/css/" />
+    <mvc:resources mapping="/fonts/**" location="/fonts/" cache-period="31536000"/>
+
+    <!-- 自动包扫描，只扫描Controller注解 -->
+    <context:component-scan base-package="com.mark.demo.security.controller" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 默认的注解映射的支持-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="false">
+            <ref bean="byteArrayHttpMessageConverter"/>
+            <ref bean="stringHttpMessageConverter"/>
+            <ref bean="fastJsonHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- CSRF 拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/common/login/**"/>
+            <mvc:exclude-mapping path="/client/**"/>
+            <bean class="com.mark.demo.security.interceptor.CSRFHandlerInterceptor">
+                <property name="csrfTokenManager" ref="csrfTokenManager"/>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+	<bean id="redisSessionManager" class="com.mark.demo.security.session.RedisSessionManager"/>
+	
+    <!-- csrf 令牌管理 -->
+    <bean id="csrfTokenManager" class="com.mark.demo.security.interceptor.CSRFTokenManager">
+        <property name="redisSessionManager" ref="redisSessionManager"/>
+    </bean>
+
+    <!-- CSRF 表单中加入隐藏CSRF token域 -->
+    <bean name="requestDataValueProcessor" class="com.mark.demo.security.interceptor.CSRFRequestDataValueProcessor">
+        <property name="csrfTokenManager" ref="csrfTokenManager"/>
+    </bean>
+
+    <bean id="byteArrayHttpMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+
+    <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8"/>
+        <property name="supportedMediaTypes">
+            <list>
+                <value>${web.content.html.type}</value>
+                <value>${web.content.text.type}</value>
+            </list>
+        </property>
+    </bean>
+    <!-- JSON支持，避免IE执行AJAX时,返回JSON出现下载文件 -->
+    <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>${web.content.html.type}</value>
+                <value>${web.content.text.type}</value>
+                <value>${web.content.json.type}</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 视图文件解析配置 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="${web.view.prefix}"/>
+        <property name="suffix" value="${web.view.suffix}"/>
+        <property name="order" value="2" />  
+    </bean>
+    
+    <!-- 配置Freemarker属性文件路径 -->  
+    <bean id="freemarkerConfiguration"  
+        class="org.springframework.beans.factory.config.PropertiesFactoryBean">  
+        <property name="location" value="classpath:freemarker.properties" />  
+    </bean>  
+    <!-- 配置freeMarker模板加载地址 -->  
+    <bean id="freemarkerConfig"  
+        class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
+        <!-- 视图解析器在/WEB-INF/ftl/路径下扫描视图文件 -->  
+        <property name="templateLoaderPath" value="/WEB-INF/ftl/" />  
+        <property name="freemarkerSettings" ref="freemarkerConfiguration" /> 
+        <property name="freemarkerVariables">  
+            <map>  
+                <entry key="xml_escape" value-ref="fmXmlEscape" />  
+            </map>  
+        </property>  
+         
+    </bean>  
+    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />  
+    <!-- 配置freeMarker视图解析器 -->  
+    <bean id="freemakerViewResolver"  
+        class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">  
+        <property name="viewClass"  
+            value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />  
+        <!-- 扫描路径內所有以ftl結尾的文件 -->  
+        <property name="viewNames">  
+            <array>  
+                <value>*.ftl</value>  
+            </array>  
+        </property>  
+        <property name="cache" value="true" /> 
+        <property name="contentType" value="text/html; charset=UTF-8" />  
+        <property name="exposeRequestAttributes" value="true" />  
+        <property name="exposeSessionAttributes" value="true" />  
+        <property name="exposeSpringMacroHelpers" value="true" />  
+        <property name="requestContextAttribute" value="request" />  
+        <!-- 给视图解析器配置优先級，你可以给之前jsp视图解析器的值配为2 -->  
+        <property name="order" value="1" />  
+    </bean>  
+
+    <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+        <property name="config">
+            <bean class="com.google.code.kaptcha.util.Config">
+                <constructor-arg type="java.util.Properties">
+                    <props>
+                        <prop key="kaptcha.border">yes</prop>
+                        <prop key="kaptcha.image.width">150</prop>
+                        <prop key="kaptcha.image.height">40</prop>
+                        <prop key="kaptcha.noise.impl">com.google.code.kaptcha.impl.DefaultNoise</prop>
+                        <prop key="kaptcha.obscurificator.impl">com.google.code.kaptcha.impl.WaterRipple</prop>
+                        <prop key="kaptcha.textproducer.font.size">30</prop>
+                        <prop key="kaptcha.textproducer.char.space">10</prop>
+                        <prop key="kaptcha.textproducer.font.color">red</prop>
+                        <prop key="kaptcha.textproducer.char.string">
+                            1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+                        </prop>
+                        <prop key="kaptcha.textproducer.char.length">4</prop>
+                    </props>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- 参数绑定、验证失败处理 -->
+    <bean class="com.mark.demo.security.exception.handler.BindingExcetionResolver">
+        <property name="jsonMessageConverter" ref="fastJsonHttpMessageConverter"/>
+        <property name="order" value="1"/>
+    </bean>
+
+    <!-- 业务异常处理 -->
+    <bean class="com.mark.demo.security.exception.handler.BusinessExceptionResolver">
+        <property name="jsonMessageConverter" ref="fastJsonHttpMessageConverter"/>
+        <property name="order" value="2"/>
+    </bean>
+
+    <!-- 配置异常处理 -->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="order" value="3"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.apache.shiro.authz.UnauthorizedException">/error/403</prop>
+                <prop key="com.mark.demo.shiro.exception.BusinessException">/error/500</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 文件上传支持 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding">
+            <value>${web.encode}</value>
+        </property>
+        <property name="maxUploadSize">
+            <value>${web.max.size}</value>
+            <!-- 上传文件大小限制为30M，30*1024*1024 -->
+        </property>
+        <property name="maxInMemorySize">
+            <value>${web.upload.memory}</value>
+        </property>
+    </bean>
+
+
+    <!-- 登录令牌API
+    <bean id="casTokenApi" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="serviceInterface" value="com.zttx.trade.remoting.api.CasTokenApi"/>
+        <property name="service">
+            <bean class="com.zttx.web.module.remoting.CasTokenApiImpl">
+                <property name="userInfoService" ref="userInfoServiceImpl"/>
+            </bean>
+        </property>
+    </bean> -->
+
+    <!-- 地区列表API -->
+    <!-- <bean id="areaApi" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="serviceInterface" value="com.zttx.trade.remoting.api.AreaApi"/>
+        <property name="service">
+            <bean class="com.zttx.web.module.remoting.AreaApiImpl">
+                <property name="regionalService" ref="regionalServiceImpl"/>
+                <property name="regionalMapper" ref="regionalMapper"/>
+            </bean>
+        </property>
+    </bean> -->
+
+    <!-- 远程接口URL映射 -->
+    <!-- <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order" value="100"/>
+        <property name="urlMap">
+            <map>
+                <entry key="/remoting/casTokenApi" value-ref="casTokenApi"/>
+                <entry key="/remoting/areaApi" value-ref="areaApi"/>
+            </map>
+        </property>
+    </bean> -->
+    
+    
+</beans>
