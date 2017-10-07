@@ -2,6 +2,10 @@ package com.mark.demo.security.entity;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.gemfire.mapping.annotation.Indexed;
+import org.springframework.data.gemfire.mapping.annotation.Region;
+
 import com.mark.demo.security.base.GenericEntity;
 
 /*
@@ -9,14 +13,19 @@ import com.mark.demo.security.base.GenericEntity;
 *2017年9月5日
 *
 */
+@Region("user")
 public class User extends GenericEntity{
+	@Indexed
 	private String userName;
 	private String password;
 	private String phone;
 	private int age;
 	private int sex;
+	@Transient
 	private List<Role> roleList;
+	@Transient
 	private List<Group> groupList;
+	@Transient
 	private boolean rememberMe;
 
 	public String getUserName() {

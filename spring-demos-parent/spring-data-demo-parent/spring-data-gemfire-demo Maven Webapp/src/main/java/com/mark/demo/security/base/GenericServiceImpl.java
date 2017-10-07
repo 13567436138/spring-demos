@@ -1,31 +1,21 @@
 package com.mark.demo.security.base;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.mark.demo.security.entity.Resource;
+import org.springframework.data.gemfire.repository.GemfireRepository;
 
 
-public abstract class GenericServiceImpl<T extends GenericEntity> implements GenericService <T> {
+public abstract class GenericServiceImpl<T extends GenericEntity,I extends Serializable> implements GenericService <T,I> {
     /**
      * 持久层对象
      */
     
-    protected GenericMapper<T> dao;
+    protected GemfireRepository<T,I> dao;
 
-    protected GenericServiceImpl(GenericMapper<T> dao){
+    protected GenericServiceImpl(GemfireRepository<T,I> dao){
     	this.dao=dao;
     }
-    /**
-     * 查询列表数据
-     *
-     * @param entity
-     * @return
-     */
-    public List<T> findList(T entity) {
-        return dao.findList(entity);
-    }
+    
 
     /**
      * 逻辑删除
@@ -33,8 +23,8 @@ public abstract class GenericServiceImpl<T extends GenericEntity> implements Gen
      * @param refrencdId
      * @author chenjp
      */
-    public int delete(String refrencdId) {
-        return dao.delete(refrencdId);
+    public void delete(I refrencdId) {
+         dao.deleteById(refrencdId);
     }
 
     /**
@@ -43,8 +33,8 @@ public abstract class GenericServiceImpl<T extends GenericEntity> implements Gen
      * @param entity
      * @return
      */
-    public int insert(T entity) {
-        return dao.insert(entity);
+    public T insert(T entity) {
+        return dao.save(entity);
     }
 
     /**
@@ -54,25 +44,11 @@ public abstract class GenericServiceImpl<T extends GenericEntity> implements Gen
      * @return
      * @see public int delete(T entity)
      */
-    public  int deleteByPrimaryKey(String refrenceid) {
-        return dao.deleteByPrimaryKey(refrenceid);
-    }
-
-    /**
-     * 查询分页数据
-     *
-     * @param page   分页对象
-     * @param entity
-     * @return
-     */
-    public PaginateResult<T> findPage(Pagination page, T entity) {
-        entity.setPagination(page);
-        PaginateResult<T> pageResult = new PaginateResult<T>(page, dao.findList(entity));
-        pageResult.setTotal(page.getTotalCount());
-        return pageResult;
+    public  void deleteByPrimaryKey(I refrenceid) {
+         dao.deleteById(refrenceid);
     }
     
-    public List<T> findAll() {
-		return dao.selectAll();
+    public Iterable<T> findAll() {
+		return dao.findAll();
 	}
 }

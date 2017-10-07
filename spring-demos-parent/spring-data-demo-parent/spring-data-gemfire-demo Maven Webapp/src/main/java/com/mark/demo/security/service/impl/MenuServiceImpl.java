@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mark.demo.security.base.GenericServiceImpl;
+import com.mark.demo.security.base.PaginateResult;
+import com.mark.demo.security.base.Pagination;
 import com.mark.demo.security.entity.Menu;
-import com.mark.demo.security.mapper.MenuMapper;
+import com.mark.demo.security.repository.MenuRepository;
 import com.mark.demo.security.service.MenuService;
 
 /*
@@ -16,30 +18,36 @@ import com.mark.demo.security.service.MenuService;
 *
 */
 @Service
-public class MenuServiceImpl extends GenericServiceImpl<Menu> implements MenuService {
+public class MenuServiceImpl extends GenericServiceImpl<Menu,Integer> implements MenuService {
 
-	private MenuMapper menuMapper;
+	private MenuRepository menuRepository;
 	
 	@Autowired(required=true)
-	public MenuServiceImpl(MenuMapper menuMapper) {
-		super(menuMapper);
-		this.menuMapper=menuMapper;
+	public MenuServiceImpl(MenuRepository menuRepository) {
+		super(menuRepository);
+		this.menuRepository=menuRepository;
 	}
 
 	@Override
 	public List<Menu> getMenuTopLever() {
-		return menuMapper.getMenuTopLever();
+		return menuRepository.getMenuTopLever();
 	}
 
 	@Override
 	public List<Menu> getMenuChildren(int pid) {
-		return menuMapper.getMenuChildren(pid);
+		return menuRepository.getMenuChildren(pid);
 	}
 
 	@Override
 	public boolean updateMenu(Menu menu) {
-		menuMapper.updateMenu(menu);
+		menuRepository.updateMenu(menu);
 		return true;
+	}
+
+	@Override
+	public PaginateResult<Menu> findPage(Pagination pagination, Menu menu) {
+		
+		return null;
 	}
 
 

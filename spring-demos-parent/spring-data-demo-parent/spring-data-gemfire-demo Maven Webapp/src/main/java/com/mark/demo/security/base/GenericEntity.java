@@ -2,6 +2,9 @@ package com.mark.demo.security.base;
 
 import java.io.Serializable;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+
 
 public abstract class GenericEntity implements Serializable {
 
@@ -10,6 +13,7 @@ public abstract class GenericEntity implements Serializable {
     /**
      * 主键编号
      */
+    @Id
     protected int id;
 
     /**
@@ -21,6 +25,7 @@ public abstract class GenericEntity implements Serializable {
      * 分页对象
      * <p>用于动态加入SQL分页语句的对象</p>
      */
+    @Transient
     protected Pagination pagination;
 
     public static long getSerialVersionUID() {

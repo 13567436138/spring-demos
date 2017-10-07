@@ -11,11 +11,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import com.mark.demo.security.entity.Role;
 import com.mark.demo.security.entity.User;
-import com.mark.demo.security.mapper.UserMapper;
+import com.mark.demo.security.repository.UserRepository;
 
 /*
 *hxp(hxpwangyi@126.com)
@@ -24,11 +23,11 @@ import com.mark.demo.security.mapper.UserMapper;
 */
 public class CustomUserDetailsService implements UserDetailsService {
 	@Autowired
-	private UserMapper userMapper;
+	private UserRepository userRepository;
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-        User user = userMapper.getUserByUserName(userName);
+        User user = userRepository.getByUserName(userName);
         if(null == user) {    
              throw new UsernameNotFoundException("用户" + userName + "不存在");    
         }         
