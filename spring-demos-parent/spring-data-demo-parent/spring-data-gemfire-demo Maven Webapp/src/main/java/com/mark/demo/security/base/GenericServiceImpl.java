@@ -2,10 +2,11 @@ package com.mark.demo.security.base;
 
 import java.io.Serializable;
 
+import org.apache.geode.DataSerializable;
 import org.springframework.data.gemfire.repository.GemfireRepository;
 
 
-public abstract class GenericServiceImpl<T extends GenericEntity,I extends Serializable> implements GenericService <T,I> {
+public abstract class GenericServiceImpl<T extends DataSerializable,I extends Serializable> implements GenericService <T,I> {
     /**
      * 持久层对象
      */

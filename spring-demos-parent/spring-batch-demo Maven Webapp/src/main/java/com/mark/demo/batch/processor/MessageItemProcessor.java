@@ -7,7 +7,7 @@ import com.mark.demo.batch.entity.ProcessedMessage;
 
 /*
 *hxp(hxpwangyi@126.com)
-*2017Äê10ÔÂ3ÈÕ
+*2017
 *
 */
 public class MessageItemProcessor implements ItemProcessor<Message,ProcessedMessage> {

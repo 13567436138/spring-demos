@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.geode.DataSerializable;
 import org.apache.geode.Instantiator;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.gemfire.mapping.annotation.Indexed;
 import org.springframework.data.gemfire.mapping.annotation.Region;
@@ -20,7 +21,10 @@ import com.mark.demo.security.base.GenericEntity;
 */
 @Region("user")
 public class User extends GenericEntity{
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -540158452160163175L;
 	@Indexed
 	private String userName;
 	private String password;
@@ -36,6 +40,7 @@ public class User extends GenericEntity{
 
 	public User(){}
 	
+	@PersistenceConstructor
 	public User(int id,String userName, String password, String phone, int age, int sex) {
 		this.id=id;
 		this.userName = userName;

@@ -4,7 +4,7 @@ import java.util.Date;
 
 /*
 *hxp(hxpwangyi@126.com)
-*2017Äê10ÔÂ3ÈÕ
+*2017
 *
 */
 public class ProcessedMessage {

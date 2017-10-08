@@ -7,9 +7,12 @@ import org.springframework.data.annotation.Transient;
 
 public abstract class GenericEntity implements DataSerializable {
 
-    private static final long serialVersionUID = -5070399515553795258L;
-
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5070399515553795258L;
+
+	/**
      * 主键编号
      */
     @Id
@@ -27,9 +30,7 @@ public abstract class GenericEntity implements DataSerializable {
     @Transient
     protected Pagination pagination;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
+   
 
 
     public int getId() {

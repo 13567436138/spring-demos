@@ -123,7 +123,11 @@
 		    <artifactId>spring-web</artifactId>
 		    <version>${spring.version}</version>
 		</dependency>
-	    
+	    <dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-orm</artifactId>
+		    <version>${spring.version}</version>
+		</dependency>
 	    <dependency>  
 	        <groupId>org.springframework</groupId>  
 	        <artifactId>spring-webmvc</artifactId>  
@@ -368,8 +372,8 @@
   				<activeByDefault>true</activeByDefault>
   			</activation>
   			<properties>
-  				<p.redis.master.host>192.168.198.131</p.redis.master.host>
-  				<p.redis.master.port>7000</p.redis.master.port>
+  				<p.redis.master.host>127.0.0.1</p.redis.master.host>
+  				<p.redis.master.port>6379</p.redis.master.port>
   				<p.redis.master.pass>none</p.redis.master.pass>
   				<p.jdbc.driver>com.mysql.jdbc.Driver</p.jdbc.driver>
   				<p.master.jdbc.url>jdbc:mysql://192.168.198.131:3306/shiro?failOverReadOnly=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;allowMultiQueries=true</p.master.jdbc.url>

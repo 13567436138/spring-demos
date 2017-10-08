@@ -17,6 +17,10 @@ import com.mark.demo.security.base.GenericEntity;
 */
 @Region("resource")
 public class Resource extends GenericEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -540158452160163175L;
 	private String role;
 	private String url;
 	public String getRole() {
@@ -35,7 +39,7 @@ public class Resource extends GenericEntity {
 	static {
 	    Instantiator.register(new Instantiator(Resource.class, 1027) {
 	        public DataSerializable newInstance() {
-	          return new User();
+	          return new Resource();
 	        }
 	      });
 	  }

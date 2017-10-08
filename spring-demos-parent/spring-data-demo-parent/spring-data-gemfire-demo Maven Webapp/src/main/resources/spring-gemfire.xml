@@ -9,21 +9,26 @@
     http://www.springframework.org/schema/data/gemfire http://www.springframework.org/schema/data/gemfire/spring-data-gemfire.xsd"> 
 
   <gfe:pool id="myPool" subscription-enabled="true">
-  	<gfe:locator host="127.0.0.1"  />
+  	<gfe:locator host="127.0.0.1"  port="1099"/>
+  </gfe:pool>
+  <gfe:pool id="serverPool">
+	  <gfe:server host="127.0.0.1" port="40011"/>
   </gfe:pool>
   
   <gfe-data:repositories  base-package="com.mark.demo.security.repository" />
 
-  <gfe:client-cache id="clientCache" pool-name="myPool" /> 
+  <gfe:client-cache id="clientCache" pool-name="myPool" pdx-serializer-ref="mySerializer" pdx-read-serialized="true"/> 
+  <gfe:cache id="gemfireCache" pdx-read-serialized="true" pdx-serializer-ref="mySerializer"></gfe:cache>
   
-  <gfe:client-region id="user" cache-ref="clientCache" persistent="true" pool-name="myPool"
-  	name="user"></gfe:client-region>
+  <gfe:replicated-region id="user" cache-ref="gemfireCache" persistent="true" 
+    data-policy="PERSISTENT_REPLICATE"	key-constraint="java.lang.Integer" value-constraint="com.mark.demo.security.entity.User" name="user"/>
   	
-  	<gfe:client-region id="menu" cache-ref="clientCache" persistent="true" pool-name="myPool"
-  	name="menu"></gfe:client-region>
-  	
-  	<gfe:client-region id="resource" cache-ref="clientCache" persistent="true" pool-name="myPool"
-  	name="resource"></gfe:client-region>
+  <gfe:replicated-region id="menu" cache-ref="gemfireCache" persistent="true" 
+  	 data-policy="PERSISTENT_REPLICATE" key-constraint="java.lang.Integer" value-constraint="com.mark.demo.security.entity.Menu" name="menu"/>
+  <gfe:replicated-region id="resource" cache-ref="gemfireCache" persistent="true" 
+  	 data-policy="PERSISTENT_REPLICATE" key-constraint="java.lang.Integer" value-constraint="com.mark.demo.security.entity.Resource" name="resource"/>
+  
+  <bean id="mySerializer" class="org.apache.geode.pdx.ReflectionBasedAutoSerializer"></bean>
   
   <bean id="userGemfireTemplate" class="org.springframework.data.gemfire.GemfireTemplate" >
   	<property name="region" ref="user"></property>
@@ -32,6 +37,7 @@
   <bean id="menuGemfireTemplate" class="org.springframework.data.gemfire.GemfireTemplate" >
   	<property name="region" ref="menu"></property>
   </bean>
+  
   
   <bean id="instantiatorFactory" class="org.springframework.data.gemfire.serialization.InstantiatorFactoryBean">
 	  <property name="customTypes">

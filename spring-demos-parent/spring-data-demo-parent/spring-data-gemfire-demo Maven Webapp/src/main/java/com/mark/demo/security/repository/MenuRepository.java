@@ -16,9 +16,9 @@ public interface MenuRepository extends GemfireRepository<Menu, Integer> {
 	@Query("select * from /menu where pid=-1")
 	List<Menu> getMenuTopLever();
 	
-	@Query("select * from /menu where pid=?0 ")
+	@Query("select * from /menu where pid=$1 ")
 	List<Menu> getMenuChildren(int pid);
 	
-	@Query("update /menu set menuName=?0.menuName ,menuDesc=?0.menuDesc,link=?0.link where id=?0.id ")
+	@Query("update /menu set menuName=$1.menuName ,menuDesc=$1.menuDesc,link=$1.link where id=$1.id ")
 	void updateMenu(Menu menu);
 }

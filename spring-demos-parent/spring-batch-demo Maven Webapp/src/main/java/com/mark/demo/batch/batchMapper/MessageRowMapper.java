@@ -10,7 +10,7 @@ import com.mark.demo.batch.entity.Message;
 
 /*
 *hxp(hxpwangyi@126.com)
-*2017Äê10ÔÂ3ÈÕ
+*2017
 *
 */
 public class MessageRowMapper implements RowMapper<Message> {

@@ -2,7 +2,7 @@ package com.mark.demo.batch.job;
 
 /*
 *hxp(hxpwangyi@126.com)
-*2017年10月3日
+*2017
 *
 */
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class JobQuartz extends QuartzJobBean{
 			
 			JobExecution je = launcher.run((Job) jobDataMap.get("jobName"),
 					new JobParameters(parameters));
-			logger.info("使用时间："+(System.currentTimeMillis()-startTime));
+			logger.info("使锟斤拷时锟戒："+(System.currentTimeMillis()-startTime));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

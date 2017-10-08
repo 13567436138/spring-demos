@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.apache.geode.DataSerializable;
 import org.apache.geode.Instantiator;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.gemfire.mapping.annotation.Region;
 
 import com.mark.demo.security.base.GenericEntity;
@@ -17,6 +18,10 @@ import com.mark.demo.security.base.GenericEntity;
 */
 @Region("menu")
 public class Menu extends GenericEntity{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -540158452160163175L;
 	private int pid;
 	private String menuName;
 	private String menuDesc;
@@ -25,6 +30,7 @@ public class Menu extends GenericEntity{
 	private int order;
 	
 	public Menu(){}
+	@PersistenceConstructor
 	public Menu(int id,int pid, String menuName, String menuDesc, String link, String icon, int order) {
 		this.id=id;
 		this.pid = pid;
@@ -85,7 +91,7 @@ public class Menu extends GenericEntity{
 	static {
 	    Instantiator.register(new Instantiator(Menu.class, 1029) {
 	        public DataSerializable newInstance() {
-	          return new User();
+	          return new Menu();
 	        }
 	      });
 	  }
