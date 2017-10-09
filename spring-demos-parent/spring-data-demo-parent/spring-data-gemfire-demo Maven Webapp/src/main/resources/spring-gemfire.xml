@@ -18,7 +18,7 @@
   <gfe-data:repositories  base-package="com.mark.demo.security.repository" />
 
   <gfe:client-cache id="clientCache" pool-name="myPool" pdx-serializer-ref="mySerializer" pdx-read-serialized="true"/> 
-  <gfe:cache id="gemfireCache" pdx-read-serialized="true" pdx-serializer-ref="mySerializer"></gfe:cache>
+  <gfe:cache id="gemfireCache" pdx-read-serialized="true" pdx-serializer-ref="mySerializer" ></gfe:cache>
   
   <gfe:replicated-region id="user" cache-ref="gemfireCache" persistent="true" 
     data-policy="PERSISTENT_REPLICATE"	key-constraint="java.lang.Integer" value-constraint="com.mark.demo.security.entity.User" name="user"/>
