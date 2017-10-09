@@ -11,10 +11,13 @@
 
   <name>spring-mvc-demo-parent</name>
   <url>http://maven.apache.org</url>
-
+	
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
+  
+  <modules>
+  	<module>spring-mvc-swagger-demo Maven Webapp</module>
+  </modules>
   
 </project>
