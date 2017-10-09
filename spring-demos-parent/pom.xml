@@ -13,6 +13,7 @@
   	<module>spring-batch-demo Maven Webapp</module>
   	<module>spring-data-demo-parent</module>
   	<module>spring-mvc-demo-parent</module>
+  	<module>spring-jersey-demo Maven Webapp</module>
   </modules>
 
   <properties>
